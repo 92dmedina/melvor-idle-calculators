@@ -1,10 +1,4 @@
-//global scope
-//woodcutting global
-let baseLogExp;
-let finalLogTime;
-let finalLogs;
-let possibleLogs;
-//exp per time function
+//Expeience per time function
 const expPerTime = (seconds,exp,time) => {
     let day = 24;
     let perMinPerHour = 60;
@@ -32,89 +26,101 @@ const expPerTime = (seconds,exp,time) => {
             };
 };
 
-//exp left till max level
+//Experience left till level 99
 const expLeft = exp => {
     let maxExp = 13034431;
     let expDiff = maxExp - exp;
     console.log(expDiff);
 };
 
-//formula to get level from exp and vice versa
-class expFormula {
-    constructor() {
-        this.equate = function (xp) {
-            return Math.floor(xp + 300 * Math.pow(2, xp / 7));
-        };
-        this.levelToExp = function (level) {
-            var xp = 0;
-            for (var i = 1; i < level; i++)
-                xp += this.equate(i);
-            return Math.floor(xp / 4);
-        };
-        this.expToLevel = function (xp) {
-            var level = 1;
-            while (this.levelToExp(level) < xp)
-                level++;
-            return level;
-        };
+// Formula to get level from exp and vice versa
+const mainExpFormula= () => {
+// Calculate the equivalent experience for a given experience.
+    function equate(xp) {
+        return Math.floor(xp + 300 * Math.pow(2, xp / 7));
     };
+// Calculate the experience required to reach a given level.
+    function levelToExp(level) {
+        var xp = 0;
+        for (var i = 1; i < level; i++) {
+            xp += equate(i);
+        };
+    return Math.floor(xp / 4);
+    };
+// Calculate the level for a given experience.
+    function expToLevel(xp) {
+        var level = 1;
+        while (levelToExp(level) < xp) {
+            level++;
+    };
+    return level;
+  };
+// Return the object containing the functions.
+    return {
+        equate,
+        levelToExp,
+        expToLevel,
+  };
 };
-
-//makes class expFormula into a function-global
-const expFromLevel = new expFormula();
+//Creates a new variable for expFormula
+const expFormula = mainExpFormula();
 
 //non-skill calculator object
 const nonSkillCalc = {
     woodcutting: {
-    //Finds how long it takes to chop logs per/s
-        woodTimeCalc (tree,cape,axe,mastery,nature,) {
-            let baseTime;
+//Woodcutting variables
+        baseLogExp: 0,
+        finalLogTime: 0,
+        finalLogs: 0,
+//Finds how long it takes to chop logs per/s
+        woodTimeCalc (tree,cape,axe,masteryL,nature) {
+            let secondsPerLog;
             let axeInterval;
-            //Choose a tree
+//Chooses a tree
                 if (tree) {
                     switch (tree) {
                         case 'normal':
-                            baseTime = 3;
-                            baseLogExp = 10;
+                            secondsPerLog = 3;
+                            this.baseLogExp = 10;
                             break;
                         case 'oak':
-                            baseTime = 4;
-                            baseLogExp = 15;
+                            secondsPerLog = 4;
+                            this.baseLogExp = 15;
                             break;
                         case 'willow':
-                            baseTime = 5;
-                             baseLogExp = 22;
+                            secondsPerLog = 5;
+                             this.baseLogExp = 22;
                             break;
                         case 'teak':
-                            baseTime = 6;
-                            baseLogExp = 30;
+                            secondsPerLog = 6;
+                            this.baseLogExp = 30;
                             break;
                         case 'maple':
-                            baseTime = 8;
-                            baseLogExp = 40;
+                            secondsPerLog = 8;
+                            this.baseLogExp = 40;
                             break;
                         case 'mahogany':
-                            baseTime = 10;
-                            baseLogExp = 60;
+                            secondsPerLog = 10;
+                            this.baseLogExp = 60;
                             break;
                         case 'yew':
-                            baseTime = 12;
-                            baseLogExp = 80;
+                            secondsPerLog = 12;
+                            this.baseLogExp = 80;
                             break;
                         case 'magic':
-                            baseTime = 20;
-                            baseLogExp = 100;
+                            secondsPerLog = 20;
+                            this.baseLogExp = 100;
                             break;
                         case 'redwood':
-                            baseTime = 15;
-                            baseLogExp = 180;
+                            secondsPerLog = 15;
+                            this.baseLogExp = 180;
                             break;
                         default:
                             console.log('Please use a valid tree');
-                            break;
+                            return null;
                     };
                 };
-            //Choose an axe
+//Chooses an axe
                 if (axe) {
                     switch (axe) {
                         case 'iron':
@@ -140,61 +146,72 @@ const nonSkillCalc = {
                             break;
                         default:
                             console.log('Please use a valid axe');
-                            break;
+                            return null;
                     };
                 };
-            //Change base time depending on parameters
+//Calculate the final log time
+                this.finalLogTime = secondsPerLog - secondsPerLog * axeInterval;
+//Changes final log time depending on parameters
                 if (cape === true && nature === true) {
-                    let percent = 0.3;
-                    let interval = percent * baseTime;
-                    baseTime = baseTime - interval.toFixed(2);
+                    this.finalLogTime -= this.finalLogTime * 0.3;
                 } else if (cape === false && nature === true) {
-                    let percent = 0.15;
-                    let interval = percent * baseTime;
-                    baseTime = baseTime - interval.toFixed(2);
+                    this.finalLogTime -= this.finalLogTime * 0.15;
                 } else if (cape === true && nature === false) {
-                    let percent = 0.15;
-                    let interval = percent * baseTime;
-                    baseTime = baseTime - interval.toFixed(2);
+                    this.finalLogTime -= this.finalLogTime * 0.15;
                 } else if (cape === true) {
-                    let percent = 0.15;
-                    let interval = percent * baseTime;
-                    baseTime = baseTime - interval.toFixed(2);
-                };
-            //changes base time into the final time depnding on other factors
-                 if (axe) {
-                    let cutInterval = baseTime * axeInterval;
-                    finalLogTime = baseTime - cutInterval;
-                    finalLogTime.toFixed(1);
-                    finalLogTime = finalLogTime.toString();
+                    this.finalLogTime -= this.finalLogTime * 0.15;
                 } else {
-                    finalLogTime = baseTime;
-                    finalLogTime = finalLogTime.toString();
-                }
-                if (mastery === true) {
-                    finalLogTime = finalLogTime - 0.2;
-                    finalLogTime.toFixed(1);
-                    finalLogTime = finalLogTime.toString();
+                    //do nothing
                 };
-            //if nothing entered sends invalid/baseLogExp
-                if (baseLogExp) {
-                    baseLogExp = baseLogExp.toString()
-                } else {
-                    baseLogExp = 'Invalid';
-                    finalLogTime = 'Invalid';
+//Apply mastery level bonus
+                if (masteryL === 99) {
+                    this.finalLogTime -= 0.2;
                 };
-            },//end of first function
-            logsPerTimeCalc (mastery) {
-                let minute = 60;
-                let baseLog = 1;
-                let logsPerMinute = minute / finalLogTime;
-                let masteryPercent = (mastery * 5) / 100;
-                finalLogs = Math.round(logsPerMinute * baseLog);
-                possibleLogs = (finalLogs * masteryPercent) + finalLogs;
+                return this.finalLogTime;
+//End of woodTimeCalc function
+        },
+//Start of logsPerTimeCalc
+        logsPerTimeCalc (masteryLevel, time) {
+            const masteryPercent = Math.floor(masteryLevel * 5) / 100;
+            const secPerMin = 60;
+            const minPerHour = 60;
+            const hoursPerDay = 24;
+            let logsPerMinute = secPerMin / this.finalLogTime;
+            let logsPerHour = logsPerMinute * minPerHour;
+            let logsPerDay = logsPerHour * hoursPerDay;
+//Check to see if any values are missing
+                if (!masteryLevel || !time) {
+                    console.log('Invalid input. Please enter all required values for the logsPerTimeCalc function.')
+                    return null;
+                };
+//Logs the final log count depending on the time needed
+                switch (time) {
+                    case 'min':
+                        this.finalLogs = logsPerMinute * masteryPercent;
+                        this.finalLogs = Math.floor(this.finalLogs);
+                        this.finalLogs = this.finalLogs.toString();
+                        console.log(this.finalLogs)
+                        break;
+                    case 'hour':
+                        this.finalLogs = logsPerHour * masteryPercent;
+                        this.finalLogs = Math.floor(this.finalLogs);
+                        this.finalLogs = this.finalLogs.toString();
+                        console.log(this.finalLogs)
+                        break;
+                    case 'day':
+                        this.finalLogs = logsPerDay * masteryPercent;
+                        this.finalLogs = Math.floor(this.finalLogs);
+                        this.finalLogs = this.finalLogs.toString();
+                        console.log(this.finalLogs)
+                        break;
+                    default:
+                        console.log('Please pick a desired time');
+                        return null;
                 }
-        }
+        },
+    },
 };
 
-//testing Zone (tree,cape,axe,mastery,nature)
-nonSkillCalc.woodcutting.woodTimeCalc('magic',false,'dragon',false,false);
-expPerTime(finalLogTime,baseLogExp,'day');
+//testing Zone (tree,cape,axe,masteryL,nature)
+nonSkillCalc.woodcutting.woodTimeCalc('redwood',true,'dragon',99,true);
+nonSkillCalc.woodcutting.logsPerTimeCalc(99,'day');
