@@ -1,9 +1,9 @@
 //Expeience per time function
 const expPerTime = (seconds,exp,time) => {
-    let day = 24;
-    let perMinPerHour = 60;
-    let expPerMin = (perMinPerHour / seconds) * exp;
-    let expPerHour = expPerMin * perMinPerHour;
+    const day = 24;
+    const minPerHour = 60;
+    let expPerMin = (minPerHour / seconds) * exp;
+    let expPerHour = expPerMin * minPerHour;
     let expPerDay = expPerHour * day;
         switch (time) {
             case 'minute':
@@ -63,57 +63,55 @@ const mainExpFormula= () => {
   };
 };
 //Creates a new variable for expFormula
-const expFormula = mainExpFormula();
+let expFormula = mainExpFormula();
 
 //non-skill calculator object
 const nonSkillCalc = {
     woodcutting: {
-//Woodcutting variables
-        baseLogExp: 0,
-        finalLogTime: 0,
-        finalLogs: 0,
 //Finds how long it takes to chop logs per/s
         woodTimeCalc (tree,cape,axe,masteryL,nature) {
             let secondsPerLog;
             let axeInterval;
+            let baseLogExp;
+            let finalLogTime;
 //Chooses a tree
                 if (tree) {
                     switch (tree) {
                         case 'normal':
                             secondsPerLog = 3;
-                            this.baseLogExp = 10;
+                            baseLogExp = 10;
                             break;
                         case 'oak':
                             secondsPerLog = 4;
-                            this.baseLogExp = 15;
+                            baseLogExp = 15;
                             break;
                         case 'willow':
                             secondsPerLog = 5;
-                             this.baseLogExp = 22;
+                             baseLogExp = 22;
                             break;
                         case 'teak':
                             secondsPerLog = 6;
-                            this.baseLogExp = 30;
+                            baseLogExp = 30;
                             break;
                         case 'maple':
                             secondsPerLog = 8;
-                            this.baseLogExp = 40;
+                            baseLogExp = 40;
                             break;
                         case 'mahogany':
                             secondsPerLog = 10;
-                            this.baseLogExp = 60;
+                            baseLogExp = 60;
                             break;
                         case 'yew':
                             secondsPerLog = 12;
-                            this.baseLogExp = 80;
+                            baseLogExp = 80;
                             break;
                         case 'magic':
                             secondsPerLog = 20;
-                            this.baseLogExp = 100;
+                            baseLogExp = 100;
                             break;
                         case 'redwood':
                             secondsPerLog = 15;
-                            this.baseLogExp = 180;
+                            baseLogExp = 180;
                             break;
                         default:
                             console.log('Please use a valid tree');
@@ -150,35 +148,37 @@ const nonSkillCalc = {
                     };
                 };
 //Calculate the final log time
-                this.finalLogTime = secondsPerLog - secondsPerLog * axeInterval;
+                finalLogTime = secondsPerLog - secondsPerLog * axeInterval;
 //Changes final log time depending on parameters
                 if (cape === true && nature === true) {
-                    this.finalLogTime -= this.finalLogTime * 0.3;
+                    finalLogTime -= finalLogTime * 0.3;
                 } else if (cape === false && nature === true) {
-                    this.finalLogTime -= this.finalLogTime * 0.15;
+                    finalLogTime -= finalLogTime * 0.15;
                 } else if (cape === true && nature === false) {
-                    this.finalLogTime -= this.finalLogTime * 0.15;
+                    finalLogTime -= finalLogTime * 0.15;
                 } else if (cape === true) {
-                    this.finalLogTime -= this.finalLogTime * 0.15;
+                    finalLogTime -= finalLogTime * 0.15;
                 } else {
                     //do nothing
                 };
 //Apply mastery level bonus
                 if (masteryL === 99) {
-                    this.finalLogTime -= 0.2;
+                    finalLogTime -= 0.2;
                 };
-                return this.finalLogTime;
+                return finalLogTime;
 //End of woodTimeCalc function
         },
 //Start of logsPerTimeCalc
         logsPerTimeCalc (masteryLevel, time) {
-            const masteryPercent = Math.floor(masteryLevel * 5) / 100;
             const secPerMin = 60;
             const minPerHour = 60;
             const hoursPerDay = 24;
-            let logsPerMinute = secPerMin / this.finalLogTime;
+            let masteryPercent = Math.floor(masteryLevel * 5) / 100;
+            let woodcuttingTime = nonSkillCalc.woodcutting.woodTimeCalc('redwood',true,'dragon',99,true);
+            let logsPerMinute = secPerMin / woodcuttingTime;
             let logsPerHour = logsPerMinute * minPerHour;
             let logsPerDay = logsPerHour * hoursPerDay;
+            let finalLogs;
 //Check to see if any values are missing
                 if (!masteryLevel || !time) {
                     console.log('Invalid input. Please enter all required values for the logsPerTimeCalc function.')
@@ -187,31 +187,29 @@ const nonSkillCalc = {
 //Logs the final log count depending on the time needed
                 switch (time) {
                     case 'min':
-                        this.finalLogs = logsPerMinute * masteryPercent;
-                        this.finalLogs = Math.floor(this.finalLogs);
-                        this.finalLogs = this.finalLogs.toString();
-                        console.log(this.finalLogs)
+                        finalLogs = logsPerMinute * masteryPercent;
+                        finalLogs = Math.floor(finalLogs);
+                        finalLogs = finalLogs.toString();
+                        console.log(finalLogs)
                         break;
                     case 'hour':
-                        this.finalLogs = logsPerHour * masteryPercent;
-                        this.finalLogs = Math.floor(this.finalLogs);
-                        this.finalLogs = this.finalLogs.toString();
-                        console.log(this.finalLogs)
+                        finalLogs = logsPerHour * masteryPercent;
+                        finalLogs = Math.floor(finalLogs);
+                        finalLogs = finalLogs.toString();
+                        console.log(finalLogs)
                         break;
                     case 'day':
-                        this.finalLogs = logsPerDay * masteryPercent;
-                        this.finalLogs = Math.floor(this.finalLogs);
-                        this.finalLogs = this.finalLogs.toString();
-                        console.log(this.finalLogs)
+                        finalLogs = logsPerDay * masteryPercent;
+                        finalLogs = Math.floor(finalLogs);
+                        finalLogs = finalLogs.toString();
+                        console.log(finalLogs)
                         break;
                     default:
                         console.log('Please pick a desired time');
                         return null;
-                }
+                };
         },
     },
 };
-
 //testing Zone (tree,cape,axe,masteryL,nature)
-nonSkillCalc.woodcutting.woodTimeCalc('redwood',true,'dragon',99,true);
 nonSkillCalc.woodcutting.logsPerTimeCalc(99,'day');
